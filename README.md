@@ -51,7 +51,7 @@ python3 -m evals.run_eval       # retrieval + answer eval on the demo corpus
 
 ## Measured results
 
-Executed on this machine, 2026-11-11, Python 3.10, commit `b8691d6`+:
+Executed on this machine, 2026-11-11, Python 3.10:
 
 - **31/31 unit tests pass** (`python3 -m pytest tests/ -q`).
 - **Retrieval recall: 15/15** — for all 15 questions in
