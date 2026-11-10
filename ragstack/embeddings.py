@@ -21,8 +21,30 @@ import numpy as np
 _TOKEN_RE = re.compile(r"[a-z0-9]+(?:'[a-z]+)?")
 
 
+def _stem(token: str) -> str:
+    """Crude English suffix stripping - not Porter, just plural/verb endings.
+
+    Deliberately conservative (tokens of 4 chars or fewer are untouched,
+    'ing'/'ed' leave at least a 3-char stem) so it merges 'drink'/'drinks'
+    and 'route'/'routed' without conflating unrelated short words.
+    """
+    if len(token) <= 4:
+        return token
+    if token.endswith("ies") and len(token) > 5:
+        return token[:-3] + "y"
+    if token.endswith("ing") and len(token) > 6:
+        return token[:-3]
+    if token.endswith("ed") and len(token) > 5:
+        return token[:-2]
+    if token.endswith("es") and len(token) > 4:
+        return token[:-2]
+    if token.endswith("s") and not token.endswith("ss"):
+        return token[:-1]
+    return token
+
+
 def tokenize(text: str) -> list[str]:
-    return _TOKEN_RE.findall(text.lower())
+    return [_stem(t) for t in _TOKEN_RE.findall(text.lower())]
 
 
 class TfidfEmbedder:

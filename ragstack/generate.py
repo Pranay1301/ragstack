@@ -22,6 +22,14 @@ from .embeddings import tokenize
 
 _SENTENCE_RE = re.compile(r"(?<=[.!?])\s+")
 
+# Question/function words carry no topical signal; dropping them keeps the
+# sentence-overlap score from being diluted by "how", "the", "an".
+_STOPWORDS = frozenset(
+    "the a an and or to of in on for with by at from as is are was were be been "
+    "how what where when why which who does do did can could should would it its "
+    "this that these those i you he she we they me him her us them".split()
+)
+
 
 @dataclass(frozen=True)
 class Citation:
@@ -37,17 +45,50 @@ class Answer:
 
 
 def _sentence_scores(query_tokens: set[str], sentence: str) -> float:
-    tokens = set(tokenize(sentence))
-    if not tokens:
+    tokens = set(tokenize(sentence)) - _STOPWORDS
+    probe = query_tokens - _STOPWORDS
+    if not tokens or not probe:
         return 0.0
-    return len(query_tokens & tokens) / len(query_tokens | tokens)
+    return len(probe & tokens) / len(probe | tokens)
+
+
+def _complete_sentences(text: str) -> list[str]:
+    """Whole sentences only. Markdown headers are stripped first (a header
+    line would otherwise swallow the first real sentence), then a leading
+    fragment (passage starts lowercase, i.e. mid-sentence) and a trailing
+    fragment (no terminal punctuation) are dropped.
+    """
+    t = " ".join(
+        line for line in (ln.strip() for ln in text.splitlines()) if not line.startswith("#")
+    )
+    t = " ".join(t.split())
+    if t and t[0].islower():
+        m = _SENTENCE_RE.search(t)
+        t = t[m.end() :] if m else ""
+    last = max(t.rfind("."), t.rfind("!"), t.rfind("?"))
+    t = t[: last + 1] if last >= 0 else ""
+    return [s.strip() for s in _SENTENCE_RE.split(t) if s.strip()]
+
+
+def _merge_passage(parts: list[str]) -> str:
+    """Stitch consecutive overlapping chunks back into one passage."""
+    merged = parts[0]
+    for nxt in parts[1:]:
+        limit = min(len(merged), len(nxt))
+        k = 0
+        for size in range(limit, 19, -1):  # overlap is >= 20 chars by config
+            if merged[-size:] == nxt[:size]:
+                k = size
+                break
+        merged = merged + nxt[k:]
+    return merged
 
 
 def compose_extractive(
     query: str,
     retrieved: list[tuple[int, str, str]],  # (chunk_index, document, text)
     *,
-    max_sentences: int = 4,
+    max_sentences: int = 6,
 ) -> Answer:
     """Stitch the most query-relevant retrieved sentences into an answer."""
     if not retrieved:
@@ -57,13 +98,45 @@ def compose_extractive(
             backend="extractive",
         )
     query_tokens = set(tokenize(query))
-    scored: list[tuple[float, int, int, str]] = []  # (score, rank, chunk_index, sentence)
-    for rank, (chunk_index, _doc, text) in enumerate(retrieved):
-        for sentence in _SENTENCE_RE.split(text):
-            sentence = sentence.strip()
-            if not sentence:
+    # Merge consecutive chunks of the same document into whole passages, so
+    # sentences split across a chunk boundary score as complete sentences.
+    # Group by document first: retrieval ranks by relevance, so a document's
+    # adjacent chunks may not sit next to each other in the list. Passage
+    # order follows each group's best (first-seen) rank.
+    groups: dict[str, list[tuple[int, str]]] = {}
+    order: list[str] = []
+    for chunk_index, doc, text in retrieved:
+        if doc not in groups:
+            groups[doc] = []
+            order.append(doc)
+        groups[doc].append((chunk_index, text))
+    passages: list[tuple[str, list[tuple[int, str]]]] = []
+    for doc in order:
+        parts = sorted(groups[doc])
+        run = [parts[0]]
+        for part in parts[1:]:
+            if part[0] == run[-1][0] + 1:
+                run.append(part)
+            else:
+                passages.append((doc, run))
+                run = [part]
+        passages.append((doc, run))
+
+    scored: list[tuple[float, int, int, str, str]] = []  # (score, rank, chunk_index, doc, sentence)
+    seen: set[str] = set()  # overlapping passages repeat sentences; pick each once
+    for rank, (doc, parts) in enumerate(passages):
+        merged = _merge_passage([text for _ci, text in parts])
+        for sentence in _complete_sentences(merged):
+            key = sentence.lower()
+            if key in seen:
                 continue
-            scored.append((_sentence_scores(query_tokens, sentence), rank, chunk_index, sentence))
+            seen.add(key)
+            # cite the constituent chunk that actually contains the sentence
+            chunk_index = next(
+                (ci for ci, text in parts if sentence[:40] in " ".join(text.split())),
+                parts[0][0],
+            )
+            scored.append((_sentence_scores(query_tokens, sentence), rank, chunk_index, doc, sentence))
     scored = [s for s in scored if s[0] > 0.0]
     scored.sort(key=lambda s: (-s[0], s[1]))
     picked = scored[:max_sentences]
@@ -71,23 +144,26 @@ def compose_extractive(
         # Retrieval found chunks but no lexical overlap worth quoting;
         # answer with the top chunk's lead sentence rather than nothing.
         first = retrieved[0]
-        lead = _SENTENCE_RE.split(first[2].strip())[0]
+        complete = _complete_sentences(first[2])
+        lead = complete[0] if complete else first[2].strip()
         return Answer(
             text=f"{lead} [1]",
             citations=[Citation(chunk_index=first[0], document=first[1])],
             backend="extractive",
         )
     citations: list[Citation] = []
-    parts: list[str] = []
-    for _score, _rank, chunk_index, sentence in picked:
-        doc = next(d for ci, d, _t in retrieved if ci == chunk_index)
-        try:
-            ref = [c.chunk_index for c in citations].index(chunk_index) + 1
-        except ValueError:
+    out_parts: list[str] = []
+    for _score, _rank, chunk_index, doc, sentence in picked:
+        # chunk_index is per-document, so the citation key is the (doc, chunk) pair
+        key = (doc, chunk_index)
+        existing = [i for i, c in enumerate(citations) if (c.document, c.chunk_index) == key]
+        if existing:
+            ref = existing[0] + 1
+        else:
             citations.append(Citation(chunk_index=chunk_index, document=doc))
             ref = len(citations)
-        parts.append(f"{sentence} [{ref}]")
-    return Answer(text=" ".join(parts), citations=citations, backend="extractive")
+        out_parts.append(f"{sentence} [{ref}]")
+    return Answer(text=" ".join(out_parts), citations=citations, backend="extractive")
 
 
 def llm_available() -> bool:

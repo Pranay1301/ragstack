@@ -1,0 +1,77 @@
+[
+  {
+    "question": "How are taxes applied to an order?",
+    "expected_document": "pos-terminal.md",
+    "key_phrases": ["5 percent", "18 percent"]
+  },
+  {
+    "question": "What happens to orders when the internet goes down?",
+    "expected_document": "pos-terminal.md",
+    "key_phrases": ["local storage", "sync"]
+  },
+  {
+    "question": "How is a conflict on the same bill resolved?",
+    "expected_document": "pos-terminal.md",
+    "key_phrases": ["later timestamp"]
+  },
+  {
+    "question": "When is a bill considered closed?",
+    "expected_document": "pos-terminal.md",
+    "key_phrases": ["payments add up"]
+  },
+  {
+    "question": "Where do drink orders get routed in the kitchen?",
+    "expected_document": "kitchen-display.md",
+    "key_phrases": ["bar"]
+  },
+  {
+    "question": "What are the ticket states on the kitchen display?",
+    "expected_document": "kitchen-display.md",
+    "key_phrases": ["new", "accepted", "preparing", "ready"]
+  },
+  {
+    "question": "What happens when a ticket stays new for too long?",
+    "expected_document": "kitchen-display.md",
+    "key_phrases": ["amber", "red"]
+  },
+  {
+    "question": "Do guests need to install an app to order?",
+    "expected_document": "guest-qr.md",
+    "key_phrases": ["browser", "no app"]
+  },
+  {
+    "question": "Why does a photographed QR code stop working?",
+    "expected_document": "guest-qr.md",
+    "key_phrases": ["token"]
+  },
+  {
+    "question": "Can guests edit an order after placing it?",
+    "expected_document": "guest-qr.md",
+    "key_phrases": ["read-only", "cannot edit"]
+  },
+  {
+    "question": "Does the shift brief use an AI model?",
+    "expected_document": "shift-brief.md",
+    "key_phrases": ["no AI model", "rule-based"]
+  },
+  {
+    "question": "Can the shift brief predict tomorrow's sales?",
+    "expected_document": "shift-brief.md",
+    "key_phrases": ["does not forecast", "does not predict"]
+  },
+  {
+    "question": "How does an order change ingredient stock?",
+    "expected_document": "inventory.md",
+    "key_phrases": ["recipe", "decrement"]
+  },
+  {
+    "question": "How is the cost of food waste computed?",
+    "expected_document": "inventory.md",
+    "key_phrases": ["purchase price"]
+  },
+  {
+    "question": "What does a stocktake record when counts disagree?",
+    "expected_document": "inventory.md",
+    "key_phrases": ["variance", "adjustment"]
+  }
+]
