@@ -81,3 +81,11 @@ def test_unrelated_query_stays_low_scored():
     stack = build_stack()
     hits = stack.retrieve("bell inequalities hidden variables", k=3)
     assert stack._meta[hits[0].position].document == "physics.md"
+
+
+def test_same_chunk_number_different_documents_keeps_source():
+    result = compose_extractive('apples oranges', [
+        (0, 'apple.md', 'Apples grow on trees.'),
+        (0, 'orange.md', 'Oranges grow in groves.'),
+    ])
+    assert {c.document for c in result.citations} == {'apple.md', 'orange.md'}
