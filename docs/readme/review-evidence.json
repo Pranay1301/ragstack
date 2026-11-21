@@ -1,0 +1,12 @@
+{
+  "repo": "ragstack",
+  "base_sha": "8502c352f73ef75810b9aa098375ca9d5de3a05c",
+  "test": {
+    "command": "python3 -m pytest tests -q",
+    "exit_code": 0,
+    "stdout": "................................................................         [100%]\n64 passed in 0.36s\n",
+    "stderr": ""
+  },
+  "status": " M README.md\n M evals/run_eval.py\n M ragstack/__init__.py\n M ragstack/cli.py\n M ragstack/embeddings.py\n M ragstack/generate.py\n M ragstack/pipeline.py\n?? demo/\n?? docs/\n?? evals/out_of_scope.json\n?? evals/wording_probe.json\n?? ragstack/bm25.py\n?? ragstack/fusion.py\n?? ragstack/ingest.py\n?? tests/test_abstain.py\n?? tests/test_bm25.py\n?? tests/test_fusion.py\n?? tests/test_ingest.py\n?? tests/test_persist.py\n",
+  "diff_stat": " README.md              | 120 ++++++++++++++++++++++++++++++++++---------------\n evals/run_eval.py      |  93 +++++++++++++++++++++++++-------------\n ragstack/__init__.py   |   2 +-\n ragstack/cli.py        |  64 +++++++++++++++++---------\n ragstack/embeddings.py |  20 +++++++++\n ragstack/generate.py   |   1 +\n ragstack/pipeline.py   | 116 ++++++++++++++++++++++++++++++++++++++++++++---\n 7 files changed, 322 insertions(+), 94 deletions(-)\n"
+}

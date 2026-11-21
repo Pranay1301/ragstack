@@ -5,4 +5,4 @@ cosine index, MMR diversification and citation-grounded answer composing,
 each in one small module with its own tests.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

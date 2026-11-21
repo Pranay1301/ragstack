@@ -1,0 +1,32 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>*{box-sizing:border-box}body{background:#10141a;color:#e5edf4;margin:0;font:16px/1.6 ui-monospace,monospace}header{padding:28px 40px;border-bottom:1px solid #303944;background:#171e27}h1{font:600 30px/1.2 system-ui;margin:6px 0 12px}small,.muted{color:#9fafbd}main{padding:16px 40px}section{margin:14px 0 40px}h2{font:500 16px/1.6 ui-monospace,monospace;color:#87deba;white-space:pre-wrap;overflow-wrap:anywhere}pre{font:14px/1.65 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.exit{font-size:13px;color:#9fafbd}.pill{font:12px system-ui;background:#253b33;color:#9ee1bf;padding:5px 8px;border-radius:4px}</style><header><span class='pill'>RECORDED OUTPUT REPLAY</span><h1>ragstack</h1><small>Executed locally 2026-11-13 · No live inference in this viewer<br>Source commit 8502c352f73e · Full output: executed.json</small></header><main><section><h2>$ python3 -m evals.run_eval</h2><pre>retrieval:OK  phrases:OK   How are taxes applied to an order? 
+retrieval:OK  phrases:OK   What happens to orders when the internet goes down? 
+retrieval:OK  phrases:OK   How is a conflict on the same bill resolved? 
+retrieval:OK  phrases:OK   When is a bill considered closed? 
+retrieval:OK  phrases:OK   Where do drink orders get routed in the kitchen? 
+retrieval:OK  phrases:OK   What are the ticket states on the kitchen display? 
+retrieval:OK  phrases:OK   What happens when a ticket stays new for too long? 
+retrieval:OK  phrases:OK   Do guests need to install an app to order? 
+retrieval:OK  phrases:OK   Why does a photographed QR code stop working? 
+retrieval:OK  phrases:OK   Can guests edit an order after placing it? 
+retrieval:OK  phrases:OK   Does the shift brief use an AI model? 
+retrieval:OK  phrases:OK   Can the shift brief predict tomorrow&#x27;s sales? 
+retrieval:OK  phrases:OK   How does an order change ingredient stock? 
+retrieval:OK  phrases:OK   How is the cost of food waste computed? 
+retrieval:OK  phrases:OK   What does a stocktake record when counts disagree? 
+
+retrieval top-5: 15/15
+answer key phrases:   15/15
+</pre><p class='exit'>Process exit: 0</p></section><section><h2>$ python3 -m ragstack.cli data/demo-corpus How are taxes applied to an order?</h2><pre>
+Q: How are taxes applied to an order?
+A: Taxes are applied automatically from the restaurant&#x27;s configured rates: 5 percent on most food items and 18 percent on packaged goods in this demo configuration. [1] The point of sale terminal is where staff ring up orders at the counter. [1] The brief shows its working - every figure links to the orders behind it. [2] When the guests place the order, it lands on the kitchen display as an online order and is attached to the table&#x27;s tab. [3] That is a deliberate choice: a manager can check a number against the underlying orders and trace exactly how it was computed. [2] Everyone who scans the same table code sees the same cart, which is how a group coordinates one order. [3]
+   [pos-terminal.md chunk 0]
+   [shift-brief.md chunk 0]
+   [guest-qr.md chunk 0]
+indexed guest-qr.md: 1 chunks
+indexed inventory.md: 1 chunks
+indexed kitchen-display.md: 2 chunks
+indexed pos-terminal.md: 2 chunks
+indexed shift-brief.md: 2 chunks
+</pre><p class='exit'>Process exit: 0</p></section><section><h2>$ python3 -m pytest tests -q</h2><pre>................................                                         [100%]
+32 passed in 0.16s
+</pre><p class='exit'>Process exit: 0</p></section></main>

@@ -96,3 +96,23 @@ class TfidfEmbedder:
     @property
     def n_features(self) -> int:
         return len(self.vocab_)
+
+    def to_dict(self) -> dict:
+        """Serializable fitted state (vocabulary + idf weights)."""
+        if self.idf_ is None:
+            raise RuntimeError("embedder is not fitted")
+        terms = sorted(self.vocab_, key=self.vocab_.get)
+        return {
+            "max_features": self.max_features,
+            "min_df": self.min_df,
+            "terms": terms,
+            "idf": [float(w) for w in self.idf_],
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "TfidfEmbedder":
+        embedder = cls(max_features=int(data["max_features"]), min_df=int(data["min_df"]))
+        terms = list(data["terms"])
+        embedder.vocab_ = {t: i for i, t in enumerate(terms)}
+        embedder.idf_ = np.array(data["idf"], dtype=np.float32)
+        return embedder

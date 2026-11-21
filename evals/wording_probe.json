@@ -1,0 +1,27 @@
+[
+  {
+    "question": "Where do customers settle up for their meal?",
+    "expected_document": "guest-qr.md",
+    "key_phrases": ["counter"]
+  },
+  {
+    "question": "Can a diner change an order after sending it?",
+    "expected_document": "guest-qr.md",
+    "key_phrases": ["read-only"]
+  },
+  {
+    "question": "How does the system know when supplies run short?",
+    "expected_document": "inventory.md",
+    "key_phrases": ["reorder level"]
+  },
+  {
+    "question": "Does the morning summary guess future revenue?",
+    "expected_document": "shift-brief.md",
+    "key_phrases": ["does not predict"]
+  },
+  {
+    "question": "Why does a photographed table code fail later?",
+    "expected_document": "guest-qr.md",
+    "key_phrases": ["token rotates"]
+  }
+]

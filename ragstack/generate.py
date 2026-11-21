@@ -42,6 +42,7 @@ class Answer:
     text: str
     citations: list[Citation]
     backend: str  # "extractive" or the model name
+    abstained: bool = False  # True when retrieval confidence was too low to answer
 
 
 def _sentence_scores(query_tokens: set[str], sentence: str) -> float:

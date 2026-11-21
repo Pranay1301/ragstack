@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-13",
+  "repo": "ragstack",
+  "source_commit": "8502c352f73ef75810b9aa098375ca9d5de3a05c",
+  "runs": [
+    {
+      "command": "python3 -m pytest tests -q",
+      "exit_code": 0,
+      "stdout": "................................                                         [100%]\n32 passed in 0.16s\n",
+      "stderr": ""
+    },
+    {
+      "command": "python3 -m evals.run_eval",
+      "exit_code": 0,
+      "stdout": "retrieval:OK  phrases:OK   How are taxes applied to an order? \nretrieval:OK  phrases:OK   What happens to orders when the internet goes down? \nretrieval:OK  phrases:OK   How is a conflict on the same bill resolved? \nretrieval:OK  phrases:OK   When is a bill considered closed? \nretrieval:OK  phrases:OK   Where do drink orders get routed in the kitchen? \nretrieval:OK  phrases:OK   What are the ticket states on the kitchen display? \nretrieval:OK  phrases:OK   What happens when a ticket stays new for too long? \nretrieval:OK  phrases:OK   Do guests need to install an app to order? \nretrieval:OK  phrases:OK   Why does a photographed QR code stop working? \nretrieval:OK  phrases:OK   Can guests edit an order after placing it? \nretrieval:OK  phrases:OK   Does the shift brief use an AI model? \nretrieval:OK  phrases:OK   Can the shift brief predict tomorrow's sales? \nretrieval:OK  phrases:OK   How does an order change ingredient stock? \nretrieval:OK  phrases:OK   How is the cost of food waste computed? \nretrieval:OK  phrases:OK   What does a stocktake record when counts disagree? \n\nretrieval top-5: 15/15\nanswer key phrases:   15/15\n",
+      "stderr": ""
+    },
+    {
+      "command": "python3 -m ragstack.cli data/demo-corpus How are taxes applied to an order?",
+      "exit_code": 0,
+      "stdout": "\nQ: How are taxes applied to an order?\nA: Taxes are applied automatically from the restaurant's configured rates: 5 percent on most food items and 18 percent on packaged goods in this demo configuration. [1] The point of sale terminal is where staff ring up orders at the counter. [1] The brief shows its working - every figure links to the orders behind it. [2] When the guests place the order, it lands on the kitchen display as an online order and is attached to the table's tab. [3] That is a deliberate choice: a manager can check a number against the underlying orders and trace exactly how it was computed. [2] Everyone who scans the same table code sees the same cart, which is how a group coordinates one order. [3]\n   [pos-terminal.md chunk 0]\n   [shift-brief.md chunk 0]\n   [guest-qr.md chunk 0]\n",
+      "stderr": "indexed guest-qr.md: 1 chunks\nindexed inventory.md: 1 chunks\nindexed kitchen-display.md: 2 chunks\nindexed pos-terminal.md: 2 chunks\nindexed shift-brief.md: 2 chunks\n"
+    }
+  ]
+}
